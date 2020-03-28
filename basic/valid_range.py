@@ -6,7 +6,6 @@ from conans.errors import ConanInvalidConfiguration
 class Recipe(ConanFile):
     name = "valid_range"
     settings = "os", "arch", "compiler", "build_type"
-    generators = "cmake"
     exports_sources = "../src/*"
 
     cppstd_compatibility = [(cppstd.CPPSTD_11, cppstd.CPPSTD_14, cppstd.CPPSTD_17)]
