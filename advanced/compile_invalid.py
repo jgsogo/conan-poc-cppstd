@@ -13,6 +13,7 @@ class Recipe(ConanFile):
     name = "compile_invalid"
     settings = "os", "arch", "compiler", "build_type"
     exports_sources = "../src/*"
+    generators = "cmake"
 
     cppstd_compatibility = [(cppstd.CPPSTD_98), 
                             (cppstd.CPPSTD_11, cppstd.CPPSTD_14, cppstd.CPPSTD_17),
@@ -33,7 +34,7 @@ class Recipe(ConanFile):
         cmake.build()
     
     def package(self):
-        self.copy(f"{self.name}*", src="", dst="bin", keep_path=False)
+        self.copy(f"{self.name}*", src="bin", dst="bin", keep_path=False)
 
     def package_info(self):
         self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))
