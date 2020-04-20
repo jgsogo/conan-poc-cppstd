@@ -7,5 +7,5 @@
 
 int main() {
     std::cout << "> message: " << MESSAGE << std::endl;
-    std::cout << secret_of_life() << std::endl;
+    std::cout << {{ namespace }}::secret_of_life() << std::endl;
 }

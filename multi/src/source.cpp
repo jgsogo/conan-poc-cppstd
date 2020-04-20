@@ -29,7 +29,9 @@
 #endif 
 
 
-int secret_of_life() {
-    std::cout << "> message: " << MESSAGE << std::endl;
-    return 42;
+namespace {{ namespace }} {
+    int secret_of_life() {
+        std::cout << "> message: " << MESSAGE << std::endl;
+        return 42;
+    }
 }

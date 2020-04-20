@@ -2,11 +2,14 @@ import os
 import re
 from conans import ConanFile, tools, cppstd, CMake
 from conans.errors import ConanInvalidConfiguration, ConanException, ConanInvalidCppstd
+from jinja2 import Template
+
+# mymachine dict:
+cplusplus = {'98': '199711L', '11': '201103L', '14': '201402L', '17': '201703'}
 
 
 class PyReq(ConanFile):
     name = "pyreq"
-    version = "1.0"
 
 
 class BaseRecipe(object):
@@ -17,26 +20,8 @@ class BaseRecipe(object):
     default_options = {'shared': False}
 
     @classmethod
-    def _std_from_name(cls, name):
-        m = re.match(r'^[a-z]+(\d+)_[a-z]+(\d+)$', name)
-        if not m:
-            raise ConanException(f"name '{name}' doesn't match pattern")
-        
-        public = m.group(1)
-        private = m.group(2)
-
-        def get_cppstds(group):
-            t = list(zip(group[::2], group[1::2]))
-            t = ["".join(p) for p in t]
-            return t
-        
-        return get_cppstds(public), get_cppstds(private)
-        
-    @classmethod
     def _write_header(cls, ofstream, apis):
         ofstream.write("#pragma once\n\n")
-        # mymachine dict:
-        cplusplus = {'98': '199711L', '11': '201103L', '14': '201402L', '17': '201703'}
         if_checks = " && ".join([f"__cplusplus != {cplusplus[it]}" for it in apis])
         ofstream.write(f"#if {if_checks}\n")
         ofstream.write(f"    #error C++ standard not supported\n")
@@ -46,7 +31,6 @@ class BaseRecipe(object):
 
     def configure(self):
         self.output.info(f"Compatibility for {self.name}:")
-        self._apis, self._abis = self._std_from_name(self.name)
         self.output.info(f" - API compatible: {', '.join(self._apis)}")
         self.output.info(f" - ABI compatible: {', '.join(self._abis)}")
         # Private part has to be equal or more restrictive than public
@@ -60,9 +44,18 @@ class BaseRecipe(object):
         if cppstd_value not in self._abis:
             raise ConanInvalidCppstd(f"Cannot compile using '{cppstd_value}' (requires: {', '.join(self._abis)})")
 
+    def source(self):
+        cppstd_checks = " && ".join([f"__cplusplus != {cplusplus[it]}" for it in self._apis])
+        context = {'namespace': self.name, 'cppstd_checks': cppstd_checks}
+
+        for filename in ['header.h', 'source.cpp', 'main.cpp']:
+            with open(os.path.join("src", filename), "r+") as f:
+                t = Template(f.read()).render(**context)
+                f.seek(0)
+                f.write(t)
+                f.truncate()
+
     def build(self):
-        with open(os.path.join("src", "header.h"), "w") as f:
-            self._write_header(f, self._apis)
         cmake = CMake(self)
         settings = "|".join(map(str, [self.settings.os, self.settings.compiler, self.settings.compiler.cppstd]))
         cmake.definitions["MESSAGE:STRING"] = settings
@@ -79,7 +72,7 @@ class BaseRecipe(object):
         self.copy(f"*library*", src="lib", dst="lib", keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ['library', ]
+        self.cpp_info.libs = [f'{self.name}_library', ]
         self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))
 
     def package_id(self):
