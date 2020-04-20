@@ -12,3 +12,7 @@ class Recipe(ConanFile):
 
     # Recipe starts here
     name = "zlib"
+
+    def init(self):
+        base = self.python_requires["pyreq"].module.BaseRecipe
+        self.exports_sources = base.exports_sources + ('src/zlib.cpp', )

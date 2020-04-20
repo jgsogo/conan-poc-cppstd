@@ -14,7 +14,7 @@ class PyReq(ConanFile):
 
 class BaseRecipe(object):
     settings = "os", "arch", "compiler", "build_type"
-    exports_sources = "src/*"
+    exports_sources = "src/CMakeLists.txt", "src/header.h", "src/main.cpp"
     generators = "cmake"
     options = {'shared': [True, False]} 
     default_options = {'shared': False}
@@ -48,7 +48,7 @@ class BaseRecipe(object):
         cppstd_checks = " && ".join([f"__cplusplus != {cplusplus[it]}" for it in self._apis])
         context = {'namespace': self.name, 'cppstd_checks': cppstd_checks}
 
-        for filename in ['header.h', 'source.cpp', 'main.cpp']:
+        for filename in ['header.h', 'main.cpp', 'CMakeLists.txt']:
             with open(os.path.join("src", filename), "r+") as f:
                 t = Template(f.read()).render(**context)
                 f.seek(0)
@@ -67,7 +67,7 @@ class BaseRecipe(object):
     
     def package(self):
         self.copy(f"{self.name}*", src="bin", dst="bin", keep_path=False)
-        self.copy(f"*.h", src="src", dst="include", keep_path=True)
+        self.copy(f"*.h", src="src", dst=f"include/{self.name}", keep_path=True)
         self.copy(f"*library*", src="bin", dst="bin", keep_path=False)
         self.copy(f"*library*", src="lib", dst="lib", keep_path=False)
 

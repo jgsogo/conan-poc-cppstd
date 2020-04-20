@@ -13,3 +13,7 @@ class Recipe(ConanFile):
     # Recipe starts here
     name = "boost"
     requires = "zlib/poc@user/testing"
+
+    def init(self):
+        base = self.python_requires["pyreq"].module.BaseRecipe
+        self.exports_sources = base.exports_sources + ('src/boost.cpp', )
