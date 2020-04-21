@@ -38,7 +38,9 @@ def main(recipe, reference):
             profile.close()
             profile_file = profile.name
 
-            out, _ = subprocess.Popen(['conan', 'package_id', recipe, '--profile', profile_file], stdout=subprocess.PIPE, shell=False).communicate()
+            out, err = subprocess.Popen(['conan', 'package_id', recipe, '--profile', profile_file], stdout=subprocess.PIPE, shell=False).communicate()
+            if not out:
+                continue
             out = out.decode('utf-8')
             os.unlink(profile_file)
 
@@ -78,6 +80,5 @@ if __name__ == "__main__":
     parser.add_argument('reference', type=str, help='reference (only for CLI suggestion at the end)')
     args = parser.parse_args()
 
-    recipe = os.path.abspath(args.path_to_recipe)
-    sys.stdout.write("Work on recipe '{}'\n".format(recipe))
-    main(recipe, args.reference)
+    sys.stdout.write("Work on recipe '{}'\n".format(args.path_to_recipe))
+    main(args.path_to_recipe, args.reference)
