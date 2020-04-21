@@ -1,3 +1,0 @@
-[requires]
-boost/poc@user/testing
-bleeding_edge/poc@user/testing

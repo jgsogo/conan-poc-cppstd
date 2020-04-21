@@ -6,7 +6,7 @@ from conans.errors import ConanInvalidCppstd
 
 class Recipe(ConanFile):
     """
-    This package doesn't compile using C++17, but its ABI is compatible with 11, 14 and 17 (is this real/possible?)
+    This package doesn't compile using C++11, but its ABI is compatible with 11, 14 and 17
     Maybe, it doesn't compile because of this specific os/arch/compiler/compiler.version, shit happens!
     """
 
@@ -20,10 +20,11 @@ class Recipe(ConanFile):
                             (cppstd.CPPSTD_20)]
 
     def configure(self):
-        self.output.info("This package compile for all the C++ standards, but c++17")
+        self.output.info("This package compile for all the C++ standards, but c++11")
         cppstd_value, _ = cppstd.get_cppstd(self)
-        if cppstd_value == cppstd.CPPSTD_17:
-            raise ConanInvalidCppstd("Cannot compile using c++17")  # ConanInvalidCppstd will raise in build method
+        if cppstd_value == cppstd.CPPSTD_11:
+            # ConanInvalidCppstd will raise in build method
+            raise ConanInvalidCppstd("Cannot compile using c++11")
 
     def build(self):
         cmake = CMake(self)
