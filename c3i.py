@@ -2,21 +2,26 @@ import os
 import sys
 import subprocess
 import tempfile
+from collections import namedtuple
 
 from conans.client.build.cppstd_flags import cppstd_default
 from conans.cppstd import ALL_CPPSTD
+from conans.client.conf import get_default_settings_yml
+from conans.model.settings import Settings
 
 
-def main(recipe):
-    settings = {'os': 'Linux',
-                'arch': 'x86_64',
-                'compiler': 'gcc',
-                'compiler.version': '8',
-                'compiler.libcxx': 'libstdc++11',
-                'build_type': 'Release'}
+def main(reference):
+    settings = Settings.loads(get_default_settings_yml())
+    settings.os = 'Macos'
+    settings.arch = 'x86_64'
+    settings.compiler = 'apple-clang'
+    settings.compiler.version = '11.0'
+    settings.compiler.libcxx = 'libc++'
+    settings.build_type = 'Release'
+
     # Iterate all the 'cppstd' (start with the default one) to discover which one to build
     #   - first the default, then the rest
-    default_cppstd = cppstd_default(settings['compiler'], settings['compiler.version'])
+    default_cppstd = cppstd_default(settings)
     cppstd_to_iterate = [it for it in ALL_CPPSTD if it != default_cppstd] + [default_cppstd, ]
     cppstd_to_iterate.reverse()
 
@@ -33,13 +38,14 @@ def main(recipe):
             profile.close()
             profile_file = profile.name
 
-            out, _ = subprocess.Popen(['conan', 'package_id', recipe, '--profile', profile_file], stdout=subprocess.PIPE, shell=False).communicate()
+            out, _ = subprocess.Popen(['conan', 'package_id', reference, '--profile', profile_file], stdout=subprocess.PIPE, shell=False).communicate()
             out = out.decode('utf-8')
             os.unlink(profile_file)
 
         #   - get 'package_id' and compatible ones
         own_pkg_id = None
         compatible = []
+        print(out)
         for line in out.splitlines():
             if line.startswith("Package ID:"):
                 own_pkg_id = line.split(":", 1)[1].strip()
@@ -63,9 +69,9 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description='Computation of profiles to build in C3i.')
-    parser.add_argument('recipe', type=str, help='recipe to work with')
+    parser.add_argument('reference', type=str, help='reference to work with')
     args = parser.parse_args()
 
-    recipe = os.path.abspath(args.recipe)
-    sys.stdout.write("Work on recipe '{}'\n".format(recipe))
-    main(recipe)
+    reference = args.reference
+    sys.stdout.write("Work on reference '{}'\n".format(reference))
+    main(reference)

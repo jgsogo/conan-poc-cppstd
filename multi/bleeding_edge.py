@@ -13,6 +13,9 @@ class Recipe(ConanFile):
     # Recipe starts here
     name = "bleeding_edge"
 
+    cppstd_compatibility = [(cppstd.CPPSTD_14, ), 
+                            (cppstd.CPPSTD_17, )]
+
     def init(self):
         base = self.python_requires["pyreq"].module.BaseRecipe
         self.exports_sources = base.exports_sources + ('src/bleeding_edge.cpp', )

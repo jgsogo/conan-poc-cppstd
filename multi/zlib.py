@@ -12,6 +12,7 @@ class Recipe(ConanFile):
 
     # Recipe starts here
     name = "zlib"
+    #cppstd_compatibility = [(cppstd.CPPSTD_98, cppstd.CPPSTD_11, cppstd.CPPSTD_14, cppstd.CPPSTD_17)]
 
     def init(self):
         base = self.python_requires["pyreq"].module.BaseRecipe
