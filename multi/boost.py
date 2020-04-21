@@ -12,8 +12,14 @@ class Recipe(ConanFile):
 
     # Recipe starts here
     name = "boost"
-    requires = "zlib/poc@user/testing"
 
     def init(self):
         base = self.python_requires["pyreq"].module.BaseRecipe
         self.exports_sources = base.exports_sources + ('src/boost.cpp', )
+        self.options.update({'icu': [True, False]})
+        self.default_options.update({'icu': False})
+
+    def requirements(self):
+        self.requires("zlib/poc@user/testing")
+        if self.options.icu:
+            self.requires("icu/poc@user/testing")

@@ -9,3 +9,6 @@ conan create multi/boost.py boost/poc@user/testing --profile=profiles/cpp11
 conan create multi/boost.py boost/poc@user/testing --profile=profiles/cpp14
 conan create multi/boost.py boost/poc@user/testing --profile=profiles/cpp17
 
+# ICU: requires >= C++11
+conan create multi/boost.py boost/poc@user/testing --profile=profiles/cpp11
+
