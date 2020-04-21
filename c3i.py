@@ -10,7 +10,7 @@ from conans.client.conf import get_default_settings_yml
 from conans.model.settings import Settings
 
 
-def main(recipe, reference):
+def main(recipe, reference, moreargs):
     settings = Settings.loads(get_default_settings_yml())
     settings.os = 'Macos'
     settings.arch = 'x86_64'
@@ -38,7 +38,7 @@ def main(recipe, reference):
             profile.close()
             profile_file = profile.name
 
-            out, err = subprocess.Popen(['conan', 'package_id', recipe, '--profile', profile_file], stdout=subprocess.PIPE, shell=False).communicate()
+            out, err = subprocess.Popen(['conan', 'package_id', recipe, '--profile', profile_file] + moreargs, stdout=subprocess.PIPE, shell=False).communicate()
             if not out:
                 continue
             out = out.decode('utf-8')
@@ -69,7 +69,7 @@ def main(recipe, reference):
     sys.stdout.write("-"*20 + "\n")
     if reference:
         for it in list_to_compile:
-            sys.stdout.write(f"conan create {recipe} {reference} --profile=profiles/cpp{it}\n")
+            sys.stdout.write(f"conan create {recipe} {reference} --profile=profiles/cpp{it} {' '.join(moreargs)}\n")
 
 
 if __name__ == "__main__":
@@ -78,7 +78,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Computation of profiles to build in C3i.')
     parser.add_argument('path_to_recipe', type=str, help='recipe to work with')
     parser.add_argument('reference', type=str, help='reference (only for CLI suggestion at the end)')
-    args = parser.parse_args()
+    parser.add_argument('otherthings', nargs='*')
+    args, unknownargs = parser.parse_known_args()
 
     sys.stdout.write("Work on recipe '{}'\n".format(args.path_to_recipe))
-    main(args.path_to_recipe, args.reference)
+    main(args.path_to_recipe, args.reference, unknownargs)
