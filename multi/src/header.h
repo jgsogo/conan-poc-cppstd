@@ -5,5 +5,5 @@
 #endif
 
 namespace {{ namespace }} {
-    int secret_of_life();
+    int secret_of_life(int tabs);
 }

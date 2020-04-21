@@ -31,5 +31,5 @@
 
 int main() {
     std::cout << "{{ namespace }} main" << std::endl;
-    std::cout << {{ namespace }}::secret_of_life() << std::endl;
+    std::cout << {{ namespace }}::secret_of_life(1) << std::endl;
 }

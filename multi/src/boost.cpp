@@ -10,11 +10,11 @@
 
 
 namespace boost {
-    int secret_of_life() {
-        std::cout << "> boost: " << MESSAGE << std::endl;
-        zlib::secret_of_life();
+    int secret_of_life(int tabs) {
+        std::cout << std::string(tabs, '\t') << "> boost: " << MESSAGE << std::endl;
+        zlib::secret_of_life(tabs+1);
         #if USING_ICU
-        icu::secret_of_life();
+        icu::secret_of_life(tabs+1);
         #endif
         return 42;
     }

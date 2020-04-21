@@ -5,8 +5,8 @@
 
 
 namespace zlib {
-    int secret_of_life() {
-        std::cout << "> zlib: " << MESSAGE << std::endl;
+    int secret_of_life(int tabs) {
+        std::cout << std::string(tabs, '\t') << "> zlib: " << MESSAGE << std::endl;
         return 42;
     }
 }

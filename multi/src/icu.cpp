@@ -5,8 +5,8 @@
 
 
 namespace icu {
-    int secret_of_life() {
-        std::cout << "> icu: " << MESSAGE << std::endl;
+    int secret_of_life(int tabs) {
+        std::cout << std::string(tabs, '\t') << "> icu: " << MESSAGE << std::endl;
         return 42;
     }
 }
