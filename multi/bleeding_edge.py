@@ -12,7 +12,6 @@ class Recipe(ConanFile):
 
     # Recipe starts here
     name = "bleeding_edge"
-
     cppstd_compatibility = [(cppstd.CPPSTD_14, ), 
                             (cppstd.CPPSTD_17, )]
 

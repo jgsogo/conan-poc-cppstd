@@ -30,19 +30,19 @@ class BaseRecipe(object):
         ofstream.write(f"int secret_of_life();\n\n")
 
     def configure(self):
-        self.output.info(f"Compatibility for {self.name}:")
-        self.output.info(f" - API compatible: {', '.join(self._apis)}")
-        self.output.info(f" - ABI compatible: {', '.join(self._abis)}")
+        #self.output.info(f"Compatibility for {self.name}:")
+        #self.output.info(f" - API compatible: {', '.join(self._apis)}")
+        #self.output.info(f" - ABI compatible: {', '.join(self._abis)}")
         # Private part has to be equal or more restrictive than public
         assert all([it in self._apis for it in self._abis]), "All from ABI are not contained in APIs"
 
-        cppstd_value, _ = cppstd.get_cppstd(self)
-        self.output.info(f"Profile is using {cppstd_value}")
+        #cppstd_value, _ = cppstd.get_cppstd(self)
+        #self.output.info(f"Profile is using {cppstd_value}")
 
-        if cppstd_value not in self._apis:
-            raise ConanInvalidConfiguration(f"API incompatible with '{cppstd_value}' (requires: {', '.join(self._apis)})")
-        if cppstd_value not in self._abis:
-            raise ConanInvalidCppstd(f"Cannot compile using '{cppstd_value}' (requires: {', '.join(self._abis)})")
+        #if cppstd_value not in self._apis:
+        #    raise ConanInvalidConfiguration(f"API incompatible with '{cppstd_value}' (requires: {', '.join(self._apis)})")
+        #if cppstd_value not in self._abis:
+        #    raise ConanInvalidCppstd(f"Cannot compile using '{cppstd_value}' (requires: {', '.join(self._abis)})")
 
     def source(self):
         cppstd_checks = " && ".join([f"__cplusplus != {cplusplus[it]}" for it in self._apis])

@@ -10,7 +10,7 @@ from conans.client.conf import get_default_settings_yml
 from conans.model.settings import Settings
 
 
-def main(reference):
+def main(recipe, reference):
     settings = Settings.loads(get_default_settings_yml())
     settings.os = 'Macos'
     settings.arch = 'x86_64'
@@ -29,7 +29,7 @@ def main(reference):
     already_seen = set()
     for it in cppstd_to_iterate:
         #   - run 'conan package_id' for each profile
-        sys.stdout.write(f" - cppstd: {it}\n")
+        sys.stdout.write(f"=== Running with CPPSTD: {it}\n")
         with tempfile.NamedTemporaryFile(mode='w', delete=False) as profile:
             profile.write("[settings]\n")
             for key, value in settings.items():
@@ -38,7 +38,7 @@ def main(reference):
             profile.close()
             profile_file = profile.name
 
-            out, _ = subprocess.Popen(['conan', 'package_id', reference, '--profile', profile_file], stdout=subprocess.PIPE, shell=False).communicate()
+            out, _ = subprocess.Popen(['conan', 'package_id', recipe, '--profile', profile_file], stdout=subprocess.PIPE, shell=False).communicate()
             out = out.decode('utf-8')
             os.unlink(profile_file)
 
@@ -64,14 +64,20 @@ def main(reference):
         sys.stdout.write(f"   >> to compile: {', '.join(list_to_compile)}\n")
         sys.stdout.write(f"   >> already seen: {', '.join(already_seen)}\n")
 
+    sys.stdout.write("-"*20 + "\n")
+    if reference:
+        for it in list_to_compile:
+            sys.stdout.write(f"conan create {recipe} {reference} --profile=profiles/cpp{it}\n")
+
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description='Computation of profiles to build in C3i.')
-    parser.add_argument('reference', type=str, help='reference to work with')
+    parser.add_argument('path_to_recipe', type=str, help='recipe to work with')
+    parser.add_argument('reference', type=str, help='reference (only for CLI suggestion at the end)')
     args = parser.parse_args()
 
-    reference = args.reference
-    sys.stdout.write("Work on reference '{}'\n".format(reference))
-    main(reference)
+    recipe = os.path.abspath(args.path_to_recipe)
+    sys.stdout.write("Work on recipe '{}'\n".format(recipe))
+    main(recipe, args.reference)
