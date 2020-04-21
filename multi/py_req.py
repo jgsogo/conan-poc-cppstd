@@ -73,6 +73,7 @@ class BaseRecipe(object):
 
     def package_info(self):
         self.cpp_info.libs = [f'{self.name}_library', ]
+        self.cpp_info.defines = [f'USING_{self.name.upper()}']
         self.env_info.PATH.append(os.path.join(self.package_folder, "bin"))
 
     def package_id(self):
